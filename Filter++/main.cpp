@@ -1,51 +1,108 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <ios>
 
-using std::ifstream, std::ofstream, std::fstream;
-
+// Folder with all images
 std::string const folder = "ppms\\";
 
 struct Image
 {
-    std::string name;
-    bool exists;
-    fstream data;
+    std::string imageName;
+    std::fstream imageData;
 
-    Image(std::string name)
-        : name(name), data(name + ".ppm")
-    { }
-
+    Image(std::string imageName)
+        : imageName(imageName)
+    {}
     ~Image() {
-        data.close();
+        imageData.close();
+    }
+
+    void open()
+    {
+        imageData.open(imageName + ".ppm", std::ios::in);
+    }
+
+    void create()
+    {
+        imageData.open(imageName + ".ppm", std::ios::out);
     }
 };
 
-struct Pixel
+struct Interface
 {
-    unsigned char r = 0, g = 0, b = 0;
+
+
 };
+
+void deepfried(int& r, int& g, int& b)
+{
+    (r > 122 ? r = 255 : r = 0);
+    (g > 122 ? g = 255 : g = 0);
+    (b > 122 ? b = 255 : b = 0);
+}
+
 
 
 int main()
 {
-    Image imgImport(folder + "bird2");
+    std::string imageName;
+    std::cout << "Enter image name: ";
+    std::cin >> imageName; // bird2 for example
+    Image Import(folder + imageName);
+    Import.open();
 
     std::string type, width, height, RGB;
-    imgImport.data >> type >> width >> height >> RGB;
+    Import.imageData >> type >> width >> height >> RGB;
 
-    Image imgExport("1");
-    imgExport.data << type << '\n'
-                << width << ' ' << height << '\n'
-                << RGB << '\n';
-
+    Image Export("1");
+    Export.create();
+    Export.imageData << type << std::endl
+                     << width << ' ' << height << std::endl
+                     << RGB << std::endl;
 
     std::string red = "", green = "", blue = "";
-    int r = 0, g = 0, b = 0;
-    while (!imgImport.data.eof())
+    int     r   = 0,  g     = 0,  b    = 0;
+    while (Import.imageData >> red >> green >> blue)
     {
-        imgImport.data >> red >> green >> blue;
-        
         std::stringstream _red(red);
+        std::stringstream _green(green);
+        std::stringstream _blue(blue);
+
+        _red >> r;
+        _green >> g;
+        _blue >> b;
+
+        //function
+
+        deepfried(r, g, b);
+
+        Export.imageData << r << " " << g << " " << b << std::endl;
     }
+
+
+    //Image New("abc2");
+    //New.create();
+
+    //int image_width = 2;
+    //int image_height = 2;
+
+    //// Render
+
+    //New.imageData << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+    //for (int j = 0; j < image_height; j++) {
+    //    for (int i = 0; i < image_width; i++) {
+    //        auto r = float(i) / (image_width - 1);
+    //        auto g = float(j) / (image_height - 1);
+    //        auto b = 0.0;
+
+    //        int ir = int(255.999 * r);
+    //        int ig = int(255.999 * g);
+    //        int ib = int(255.999 * b);
+
+    //        New.imageData << ir << ' ' << ig << ' ' << ib << std::endl;
+    //    }
+    //}
     return 0;
 }

@@ -1,3 +1,4 @@
+#include <windows.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -42,7 +43,39 @@ void deepfried(int& r, int& g, int& b)
     (b > 122 ? b = 255 : b = 0);
 }
 
+std::string chooseFile()
+{
+    OPENFILENAME ofn = { sizeof(OPENFILENAME) };
 
+    WCHAR szFile[_MAX_PATH];
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize     = sizeof(ofn);
+    ofn.hwndOwner       = GetConsoleWindow();
+    ofn.lpstrFile       = szFile;
+    ofn.lpstrFile[0]    = '\0';
+    ofn.nMaxFile        = sizeof(szFile);
+    ofn.lpstrFilter     =
+        L"Image (*.png;*.bmp;*.jpg;*.ppm)\0*.png;*.bmp;*.jpg;*.ppm\0\
+		PNG (*.png)\0*.png\0\
+		BMP (*.bmp)\0*.bmp\0\
+		JPG (*.jpg)\0*.jpg\0\
+		PPM (*.ppm)\0*.ppm\0\0";
+    ofn.nFilterIndex    = 1;
+    ofn.lpstrFileTitle  = NULL;
+    ofn.nMaxFileTitle   = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.Flags           = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+    if (GetOpenFileName(&ofn))
+    {
+        WideCharToMultiByte(CP_ACP, 0, szFile, -1, ch, 260, NULL, NULL);
+        return szFile;
+    }
+    else
+    {
+        std::cout << "File was not opened";
+    }
+}
 
 int main()
 {

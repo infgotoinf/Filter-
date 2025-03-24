@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <iostream>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
@@ -11,30 +12,30 @@ namespace fs = std::filesystem;
 
 struct Image
 {
-    std::string imagePath;
-    std::fstream imageData;
+    std::string path;
+    std::fstream data;
 
-    Image(std::string imagePath)
-        : imagePath(imagePath)
+    Image(std::string path)
+        : path(path)
     {}
     Image()
     {
         FILE* f;
         tmpfile_s(&f);
-        imageData = std::fstream(f);
+        data = std::fstream(f);
     }
     ~Image() {
-        imageData.close();
+        data.close();
     }
 
     void open() {
-        imageData.open(imagePath, std::ios::in);
+        data.open(path, std::ios::in);
     }
     void create() {
-        imageData.open(imagePath, std::ios::out);
+        data.open(path, std::ios::out);
     }
     void smartOpen() {
-        if (fs::exists(imagePath)) fs::remove(imagePath);
+        if (fs::exists(path)) fs::remove(path);
         create();
     }
 };
@@ -119,24 +120,29 @@ void (*chooseFilter())(int&, int&, int&)
 
 int main()
 {
-    Image Import(openFile());
-    Import.open();
+    // Importing file
+    Image importimg(openFile());
+    importimg.open();
     std::string type, width, height, RGB;
-    Import.imageData >> type >> width >> height >> RGB;
+    importimg.data >> type >> width >> height >> RGB;
+
+    char name1[L_tmpnam_s];
+    tmpnam_s(name1, L_tmpnam_s);
 
     auto filter = chooseFilter();
 
-    Image tempimg;
-
+    Image tempimg(std::string(name1) + "\b\b.ppm");
+    tempimg.create();
+    std::cout << tempimg.path;
     /*Image tempimg(saveFile());
     tempimg.smartOpen();*/
-    tempimg.imageData << type << std::endl
+    tempimg.data << type << std::endl
                       << width << ' ' << height << std::endl
                       << RGB << std::endl;
 
     std::string red = "", green = "", blue = "";
     int         r   = 0,  g     = 0,  b    = 0;
-    while (Import.imageData >> red >> green >> blue)
+    while (importimg.data >> red >> green >> blue)
     {
         std::stringstream _red(red);
         std::stringstream _green(green);
@@ -148,31 +154,10 @@ int main()
 
         filter(r, g, b);
 
-        tempimg.imageData << r << " " << g << " " << b << std::endl;
+        tempimg.data << r << " " << g << " " << b << std::endl;
     }
+    // Exporting file
+    fs::copy(tempimg.path, saveFile());
 
-    //Image New("abc2");
-    //New.create();
-
-    //int image_width = 2;
-    //int image_height = 2;
-
-    //// Render
-
-    //New.imageData << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
-    //for (int j = 0; j < image_height; j++) {
-    //    for (int i = 0; i < image_width; i++) {
-    //        auto r = float(i) / (image_width - 1);
-    //        auto g = float(j) / (image_height - 1);
-    //        auto b = 0.0;
-
-    //        int ir = int(255.999 * r);
-    //        int ig = int(255.999 * g);
-    //        int ib = int(255.999 * b);
-
-    //        New.imageData << ir << ' ' << ig << ' ' << ib << std::endl;
-    //    }
-    //}
     return 0;
 }

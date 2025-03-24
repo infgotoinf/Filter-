@@ -126,16 +126,10 @@ int main()
     std::string type, width, height, RGB;
     importimg.data >> type >> width >> height >> RGB;
 
-    char name1[L_tmpnam_s];
-    tmpnam_s(name1, L_tmpnam_s);
-
     auto filter = chooseFilter();
 
-    Image tempimg(std::string(name1) + "\b\b.ppm");
-    tempimg.create();
-    std::cout << tempimg.path;
-    /*Image tempimg(saveFile());
-    tempimg.smartOpen();*/
+    Image tempimg(fs::current_path().string() + "\\randomname.ppm");
+    tempimg.smartOpen();
     tempimg.data << type << std::endl
                       << width << ' ' << height << std::endl
                       << RGB << std::endl;
@@ -156,8 +150,9 @@ int main()
 
         tempimg.data << r << " " << g << " " << b << std::endl;
     }
+
     // Exporting file
     fs::copy(tempimg.path, saveFile());
-
+    std::remove(tempimg.path.c_str());
     return 0;
 }

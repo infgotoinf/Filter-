@@ -19,25 +19,23 @@ void negative(int& r, int& g, int& b)
     b = 255 - b;
 }
 
-struct Interface
+Filter chooseFilter()
 {
-    static Filter chooseFilter()
-    {
-        int choice;
-        std::cout << "Choose filter:\n";
-        std::cout << "1: deepfried\n";
-        std::cout << "2: negative\n";
+    int choice;
+    std::cout << "Choose filter:\n";
+    std::cout << "1: deepfried\n";
+    std::cout << "2: negative\n";
 
-        do {
-            std::cin >> choice;
-            switch (choice)
-            {
-            case  1: return deepfried;
-            case  2: return negative;
-            default: std::cout << "Invalid choice!" << std::endl;
-            }
-        } while (1);
-    }
-};
+    do {
+        std::cin >> choice;
+        switch (choice)
+        {
+        case  1: return deepfried;
+        case  2: return negative;
+        default: std::cout << "Invalid choice!" << std::endl;
+        }
+    } while (1);
+}
+
 
 #endif // !FILTERS.H

@@ -29,6 +29,17 @@ struct Image
             std::remove(path.string().c_str());
         data.close();
     }
+    Image& operator=(Image const& other)
+    {
+        this->path = path;
+        this->inDestructorDelete = inDestructorDelete;
+        this->data = data;
+        return *this;
+    }
+
+    void operator()(fs::path path, bool inDestructorDelete){
+        this->path = path; this->inDestructorDelete = inDestructorDelete;
+    }
 
     void open() {
         data.open(path, std::ios::in);
@@ -36,8 +47,8 @@ struct Image
     void create() {
         data.open(path, std::ios::out);
     }
-    void smartOpen() {
-        if (fs::exists(path)) fs::remove(path);
+    void smartCreate() {
+        if (fs::exists(path)) std::remove(path.string().c_str());
         create();
     }
 };

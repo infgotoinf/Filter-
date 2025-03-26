@@ -3,20 +3,34 @@
 #ifndef FILTERS_H
 #define FILTERS_H
 
-typedef void (*Filter)(int&, int&, int&);
-
-void deepfried(int& r, int& g, int& b)
+struct Pixel
 {
-    (r > 122 ? r = 255 : r = 0);
-    (g > 122 ? g = 255 : g = 0);
-    (b > 122 ? b = 255 : b = 0);
+    int r; int b; int g;
+    Pixel(const int const &r = 0, const int const &b = 0, const int const &g = 0)
+        : r(r), b(b), g(g)
+    { }
+};
+
+typedef void (*Filter)(Pixel&);
+
+void deepfried(Pixel& p)
+{
+    (p.r > 122 ? p.r = 255 : p.r = 0);
+    (p.g > 122 ? p.g = 255 : p.g = 0);
+    (p.b > 122 ? p.b = 255 : p.b = 0);
 }
 
-void negative(int& r, int& g, int& b)
+void negative(Pixel& p)
 {
-    r = 255 - r;
-    g = 255 - g;
-    b = 255 - b;
+    p.r = 255 - p.r;
+    p.g = 255 - p.g;
+    p.b = 255 - p.b;
+}
+
+void grayscale(Pixel& p)
+{
+    p.r = 0.299f * p.r + 0.587f * p.g + 0.114f * p.b;
+    p.g = p.r; p.b = p.g;
 }
 
 Filter chooseFilter()
@@ -25,6 +39,7 @@ Filter chooseFilter()
     std::cout << "Choose filter:\n";
     std::cout << "1: deepfried\n";
     std::cout << "2: negative\n";
+    std::cout << "3: grayscale\n";
 
     do {
         std::cin >> choice;
@@ -32,6 +47,7 @@ Filter chooseFilter()
         {
         case  1: return deepfried;
         case  2: return negative;
+        case  3: return grayscale;
         default: std::cout << "Invalid choice!" << std::endl;
         }
     } while (1);

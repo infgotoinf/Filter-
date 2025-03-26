@@ -83,29 +83,21 @@ struct Interface
 
     static void applyFilter(Image& importimg, Image& tempimg, const Filter& const filter)
     {
-        std::string       type, width, height, RGB;
-        importimg.data >> type >> width >> height >> RGB;
-
-        tempimg.smartCreate();
-        tempimg.data << type << std::endl
-            << width << ' ' << height << std::endl
-            << RGB << std::endl;
-        
         std::string red = "", green = "", blue = "";
-        int         r = 0, g = 0, b = 0;
+        Pixel p;
         while (importimg.data >> red >> green >> blue)
         {
             std::stringstream _red(red);
             std::stringstream _green(green);
             std::stringstream _blue(blue);
 
-            _red >> r;
-            _green >> g;
-            _blue >> b;
+            _red >> p.r;
+            _green >> p.g;
+            _blue >> p.b;
 
-            filter(r, g, b);
+            filter(p);
 
-            tempimg.data << r << " " << g << " " << b << std::endl;
+            tempimg.data << p.r << " " << p.g << " " << p.b << std::endl;
         }
     }
 };

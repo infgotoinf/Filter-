@@ -29,13 +29,6 @@ struct Image
             std::remove(path.string().c_str());
         data.close();
     }
-    Image& operator=(Image const& other)
-    {
-        this->path = other.path;
-        this->inDestructorDelete = other.inDestructorDelete;
-        this->data = other.data;
-        return *this;
-    }
 
     void operator()(fs::path path, bool inDestructorDelete){
         this->path = path; this->inDestructorDelete = inDestructorDelete;

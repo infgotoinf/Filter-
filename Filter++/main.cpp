@@ -14,6 +14,7 @@ int main()
     do {
         std::cout << "1: Import image \n";
         std::cin >> choice;
+        system("cls");
     } while (choice != 1);
 
     Filter filter;
@@ -22,6 +23,7 @@ int main()
     std::string importingPath = Interface::openFile();
     if (importingPath == "☺")
     {
+        system("cls");
         std::cout << "You didn't choose an image\n";
         goto beginning;
     }
@@ -30,8 +32,8 @@ int main()
 
     // Creating temporary file, loading information
     Image tempimg(fs::current_path().string() + "\\randomname.ppm", true);
-    tempimg.smartCreate();
 
+    std::string type, width, height, RGB;
     int counter = 1;
 
     do {
@@ -47,9 +49,11 @@ int main()
             importingPath = Interface::openFile();
             if (importingPath == "☺")
             {
+                system("cls");
                 std::cout << "You didn't choose an image\n";
                 break;
             }
+            importimg.data.close();
             importimg(importingPath, false);
             importimg.open();
 
@@ -57,6 +61,8 @@ int main()
             tempimg(fs::current_path().string() + "\\randomname.ppm", true);
 
             counter = 1;
+            system("cls");
+            std::cout << "New image imported\n";
             break;
         case 2: // Add filter
             // Choosing a filter
@@ -64,18 +70,33 @@ int main()
 
             // Filtering
             if (counter > 1)
-                Image tempimg2 = tempimg;
-                Interface::applyFilter(tempimg2, tempimg, filter);
-            else
-                Interface::applyFilter(importimg, tempimg, filter);
+            {
+                importimg.data.close();
+                importimg(tempimg.path, true);
+                importimg.open();
+                tempimg.data.close();
+                tempimg(fs::current_path().string() + "\\randomname" + std::to_string(counter) + ".ppm", true);
+            }
+            importimg.data >> type >> width >> height >> RGB;
 
+            tempimg.smartCreate();
+            tempimg.data << type << std::endl
+                << width << ' ' << height << std::endl
+                << RGB << std::endl;
+            Interface::applyFilter(importimg, tempimg, filter);
+
+            system("cls");
+            std::cout << "Filter was added\n";
             counter++;
             break;
         case 3: //Export image
             // Exporting file
             std::string exportPath = Interface::saveFile(tempimg);
-            if (exportPath == "☺")
+            if (exportPath == "☺") {
+                system("cls");
                 std::cout << "You didn't choose a path\n";
+                break;
+            }
             else if (fs::exists(exportPath))
                 fs::copy(tempimg.path, exportPath, fs::copy_options::overwrite_existing);
             else

@@ -31,9 +31,9 @@ struct Image
     }
     Image& operator=(Image const& other)
     {
-        this->path = path;
-        this->inDestructorDelete = inDestructorDelete;
-        this->data = data;
+        this->path = other.path;
+        this->inDestructorDelete = other.inDestructorDelete;
+        this->data = other.data;
         return *this;
     }
 

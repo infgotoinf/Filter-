@@ -81,8 +81,8 @@ int main()
 
             tempimg.smartCreate();
             tempimg.data << type << std::endl
-                << width << ' ' << height << std::endl
-                << RGB << std::endl;
+                         << width << ' ' << height << std::endl
+                         << RGB << std::endl;
             Interface::applyFilter(importimg, tempimg, filter);
 
             system("cls");

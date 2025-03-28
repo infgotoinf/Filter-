@@ -104,6 +104,7 @@ void random(Pixel& p)
     }
 }
 
+
 Filter chooseFilter()
 {
     int choice;
